@@ -1,0 +1,32 @@
+<div class="modal-header">
+    <button type="button" class="close" aria-label="Close" ng-click="close()"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title" id="LoginModalTitle">{{title}}</h4>
+</div>
+<div class="modal-body ">
+    <form>
+        <fieldset>
+            <div class="input-group wa-input">
+                            <span class="input-group-addon" id="loginAddon">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </span>
+                <input id="username" type="text" class="form-control" placeholder="Username"
+                       aria-describedby="loginAddon" tabindex="1" ng-model="username"/>
+            </div>
+            <div class="form-group" style="margin-bottom: 0px">
+                <div class="input-group wa-input">
+                            <span class="input-group-addon" id="passwordAddon">
+                                <span class="glyphicon glyphicon-lock"></span>
+                            </span>
+                    <input id="password" type="password" class="form-control" placeholder="Password"
+                           aria-describedby="passwordAddon" tabindex="2" ng-model="password"/>
+                </div>
+                <a href="#" class="wa-form-link">Forgot password?</a>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default pull-left" ng-click="close()">Forgot password?</button>
+    <button type="button" class="btn btn-success" ng-click="ok()" tabindex="3">Log in</button>
+</div>

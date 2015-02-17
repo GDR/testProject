@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS `users` (
+  `userId` INT(6) UNSIGNED UNIQUE PRIMARY KEY AUTO_INCREMENT,
+  `username` VARCHAR (64) UNIQUE,
+  `password` VARCHAR (60)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `tasks` (
+  `taskId` INT(6) UNSIGNED UNIQUE AUTO_INCREMENT,
+  `fromUserId` INT(6) UNSIGNED,
+  `toUserId` INT(6) UNSIGNED,
+  `price` DECIMAL(10, 2),
+  `comission` DECIMAL(10, 2),
+  `taskType` VARCHAR(1),
+  `ts` TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `wallets` (
+  `userId` INT(6) UNSIGNED PRIMARY KEY UNIQUE,
+  `money` DECIMAL(10, 2),
+  `blocked` DECIMAL(10,2),
+  `paid` DECIMAL(10,2)
+)

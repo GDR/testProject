@@ -1,0 +1,15 @@
+webapp:
+  image: richarvey/nginx-php-fpm
+  ports:
+    - 80:80
+  volumes:
+    - /home/gosugdr/Git/testProject/site:/usr/share/nginx/html
+  links:
+    - dbUsers
+
+dbUsers:
+  image: tutum/mysql
+  volumes:
+    - /home/gosugdr/Git/testProject/db/users:/var/lib/mysql
+  ports:
+    - 3306:3306
