@@ -1,7 +1,7 @@
 <div class="navbar navbar-default navbar-static-top navbar-transparent wa-navbar">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-main">
+            <button type="button" class="navbar-toggle" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -9,13 +9,24 @@
             </button>
             <a href="/start_page.html" class="navbar-brand">WebApp</a>
         </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-            <ul class="nav navbar-nav navbar-right">
+        <div class="navbar-collapse collapse" ng-class="{'in':!navCollapsed}">
+            <ul class="nav navbar-nav navbar-right" ng-hide="user.logged_in">
                 <li>
-                    <a href="#" ng-click="openModal()">Sign In</a>
+                    <a ng-click="sign_in()">Sign In</a>
                 </li>
                 <li>
-                    <a href="#" data-toggle="modal" data-target="#loginModal">Sign Up</a>
+                    <a ng-click="sign_up()">Sign Up</a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right" ng-show="user.logged_in">
+                <li>
+                    <p class="navbar-text">
+                        Hello, {{user.username}}. You are {{user.getUserTypeName()}}
+                    </p>
+                </li>
+                <li>
+                    <a ng-click="sign_out()">Sign Out</a>
                 </li>
             </ul>
         </div>
