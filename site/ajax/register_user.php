@@ -5,46 +5,66 @@
  * Gets from POST request username and password
  */
 
-require_once(__DIR__."/../utils/database_util.php");
+require_once(__DIR__ . "/../utils/database_util.php");
+require_once(__DIR__ . "/../utils/app_utils.php");
 header('Content-Type: application/json');
-$result = array('status' => 'ok');
 
-// Check username
-if (isset($_POST['username'])) {
-    $username = $_POST['username'];
-    if (!ctype_alnum($username)) {
-        $result['status'] = 'fail';
-    }
-    if (strlen($username) <= 5) {
-        $result['status'] = 'fail';
+$username = null;
+$password = null;
+$userType = null;
+
+$response = array();
+
+if (isset($_POST[USERNAME])) {
+    $username = $_POST[USERNAME];
+    if (strlen($username) < 5) {
+        $response['reason'] = 'Username must be at least 5 chars';
+    } elseif (!ctype_alnum($username)) {
+        $response['reason'] = 'Username can only contain alphanumeric characters';
     }
 } else {
-    $result['status'] = 'fail';
+    $response['reason'] = 'Username must not be empty';
 }
-// Check password
-if (isset($_POST['password'])) {
+if (isset($_POST[PASSWORD])) {
     $password = $_POST['password'];
-    if (strlen($password) <= 5) {
-        $result['status'] = 'fail';
+    if (strlen($password) < 5) {
+        $response['reason'] = 'Password must be at least 5 chars';
     }
 } else {
-    $result['status'] = 'fail';
+    $response['reason'] = 'Password must not be empty';
+}
+if (isset($_POST[USERTYPE])) {
+    $userType = $_POST[USERTYPE];
+    if ($userType != USER_CUSTOMER && $userType != USER_PERFORMER) {
+        $response['reason'] = 'Incorrect user type';
+    }
+} else {
+    $response['reason'] = 'User type must not be empty';
 }
 
-if ($result['status'] == 'fail') {
-    die (json_decode($result));
+if (isset($response['reason'])) {
+    http_response_code(403);
+    echo json_encode($response);
+    exit();
 }
+$username = trim($username);
+$username = strtolower($username);
+$username = mysqli_real_escape_string($db_connection, $username);
+$password = password_hash($password, PASSWORD_BCRYPT);
 
-$username_db = mysqli_real_escape_string($db_connection, $username);
-$password_db = password_hash($password, PASSWORD_BCRYPT);
+$add_user_statement = mysqli_stmt_init($db_connection);
+$query = "INSERT INTO `users` (`username`, `password`, `userType`) VALUES (?, ?, ?);";
+if (mysqli_stmt_prepare($add_user_statement, $query)) {
 
-$add_user_statement = mysqli_prepare($db_connection, "INSERT INTO `users` (`username`, `password`) VALUES (?, ?);");
-
-mysqli_stmt_bind_param($add_user_statement, 'ss', $username_db, $password_db);
-mysqli_stmt_execute($add_user_statement);
-if (mysqli_stmt_affected_rows($add_user_statement) != 1) {
-    $result['status'] = 'fail';
+    mysqli_stmt_bind_param($add_user_statement, 'sss', $username, $password, $userType);
+    mysqli_stmt_execute($add_user_statement);
+    if (mysqli_stmt_affected_rows($add_user_statement) != 1) {
+        http_response_code(403);
+        $result['reason'] = 'There is another user with same username';
+    }
+    if (!empty($result)) {
+        echo json_encode($result);
+    }
 }
-echo json_encode($result);
 mysqli_stmt_close($add_user_statement);
 mysqli_close($db_connection);
