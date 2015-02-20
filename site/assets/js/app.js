@@ -16,12 +16,23 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             url: '/',
             templateUrl: 'templates/about_content.html',
             controller: 'AboutController'
+        })
+        .state('tasks',{
+            url: '/tasks',
+            templateUrl: 'templates/tasks.html',
+            controller: 'TasksController'
         });
 });
 
 app.controller('AboutController', function ($scope) {
     $scope.title = 'Labor Exchange test project';
     $scope.subTitle = 'Service which helps you to find a performer for your tasks';
+});
+
+app.controller('TasksController', function($scope) {
+    $scope.title = 'Labor Exchange test project';
+    $scope.subTitle = 'Service which helps you to find a performer for your tasks';
+
 });
 
 app.factory('AuthFactory', function ($http, USER_TYPES) {

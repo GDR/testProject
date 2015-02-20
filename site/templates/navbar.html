@@ -10,23 +10,37 @@
             <a href="/start_page.html" class="navbar-brand">WebApp</a>
         </div>
         <div class="navbar-collapse collapse" ng-class="{'in':!navCollapsed}">
-            <ul class="nav navbar-nav navbar-right" ng-hide="user.logged_in">
+            <ul class="nav navbar-nav navbar-left">
                 <li>
-                    <a ng-click="sign_in()">Sign In</a>
+                    <a ui-sref="about">About</a>
                 </li>
                 <li>
-                    <a ng-click="sign_up()">Sign Up</a>
+                    <a ui-sref="tasks">Tasks</a>
+                </li>
+                <li>
+                    <a ui-sref="account">My account</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-left" ng-show="user.logged_in">
+                <li>
+                    <p class="navbar-text">
+                        Hello, <b>{{user.username}}</b>. You are {{user.getUserTypeName()}}
+                    </p>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right" ng-hide="user.logged_in">
+                <li>
+                    <a href="" ng-click="sign_in()">Sign In</a>
+                </li>
+                <li>
+                    <a href="" ng-click="sign_up()">Sign Up</a>
                 </li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right" ng-show="user.logged_in">
                 <li>
-                    <p class="navbar-text">
-                        Hello, {{user.username}}. You are {{user.getUserTypeName()}}
-                    </p>
-                </li>
-                <li>
-                    <a ng-click="sign_out()">Sign Out</a>
+                    <a href="" ng-click="sign_out()">Sign Out</a>
                 </li>
             </ul>
         </div>

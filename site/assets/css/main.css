@@ -2,6 +2,10 @@
     margin: 0;
 }
 
+html {
+    overflow-y: scroll;
+}
+
 html, body {
     height: 100%;
 }
@@ -9,6 +13,7 @@ html, body {
 .wa-page-wrapper {
     min-height: 100%;
     margin-bottom: -41px;
+    padding-bottom: 50px;
 }
 
 .navbar {
@@ -50,18 +55,6 @@ html, body {
     margin-bottom: 30px;
 }
 
-.wa-affix {
-    margin-top: 63px;
-}
-
-.wa-content h1 {
-    border-bottom: 1px solid #eee;
-}
-
-.wa-section {
-    margin-bottom: 200px;
-}
-
 .wa-footer {
     background-color: #333333;
     color: #e0e0e0;
@@ -72,39 +65,3 @@ html, body {
     margin-bottom: 0px;
 }
 
-.affix-top, .affix {
-    position: static;
-}
-
-@media (min-width: 992px) {
-    #sidebar.affix-top {
-        position: static;
-        margin-top: 30px;
-        width: 100%;
-    }
-
-    #sidebar.affix {
-        position: fixed;
-        top: 30px;
-        width: 100%;
-    }
-}
-#sidebar li {
-    border: 0 #ffffff solid;
-    border-left-width: 4px;
-}
-
-#sidebar li.active {
-    border: 0 #eee solid;
-    border-left-width: 4px;
-}
-
-
-.wa-input {
-    margin-bottom: 15px;
-}
-
-.wa-form-link {
-    text-decoration: solid;
-    margin-bottom: 0px;
-}
