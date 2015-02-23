@@ -6,14 +6,19 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `tasks` (
-  `taskId` INT(6) UNSIGNED UNIQUE AUTO_INCREMENT,
-  `fromUserId` INT(6) UNSIGNED,
-  `toUserId` INT(6) UNSIGNED,
-  `price` DECIMAL(10, 2),
-  `comission` DECIMAL(10, 2),
-  `taskType` VARCHAR(1),
-  `ts` TIMESTAMP
-) ENGINE=InnoDB;
+  `taskId`       INT(6) UNSIGNED UNIQUE AUTO_INCREMENT,
+  `title`        VARCHAR(255)    NOT NULL,
+  `fromUserId`   INT(6) UNSIGNED NOT NULL,
+  `fromUsername` VARCHAR(64)     NOT NULL,
+  `toUserId`     INT(6) UNSIGNED,
+  `toUsername`   VARCHAR(64),
+  `price`        DECIMAL(13, 2),
+  `comission`    DECIMAL(13, 2),
+  `taskType`     VARCHAR(1)             DEFAULT '0',
+  `sysblock`     VARCHAR(1)             DEFAULT 'F',
+  `ts`           BIGINT
+)
+  ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS `wallets` (
   `userId` INT(6) UNSIGNED PRIMARY KEY UNIQUE,
