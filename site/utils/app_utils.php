@@ -6,14 +6,19 @@ DEFINE("USERNAME", "username");
 DEFINE("PASSWORD", "password");
 DEFINE("USERTYPE", "user_type");
 
-DEFINE("TASK_TITLE", "title");
-DEFINE("TASK_PRICE", "price");
+DEFINE("FIELD_TITLE", "title");
+DEFINE("FIELD_PRICE", "price");
 
 DEFINE("FIELD_USERNAME", 'username');
 DEFINE("FIELD_USER_ID", 'user_id');
 DEFINE("FIELD_USER_TYPE", 'user_type');
+DEFINE("FIELD_TASK_ID", 'task_id');
 
 DEFINE("SESSION_USER", 'user');
+
+DEFINE("FIELD_OFFSET", 'offset');
+
+DEFINE("GET_TASK_LIMIT", 20);
 
 DEFINE("COMMISSION", 0.20);
 

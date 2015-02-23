@@ -29,9 +29,16 @@ app.controller('AboutController', function ($scope) {
     $scope.subTitle = 'Service which helps you to find a performer for your tasks';
 });
 
-app.controller('TasksController', function($scope, $modal) {
+app.controller('TasksController', function($scope, $modal, RequestFactory) {
     $scope.title = 'Labor Exchange test project';
     $scope.subTitle = 'Service which helps you to find a performer for your tasks';
+
+    $scope.tasks = {};
+
+    RequestFactory.getTasks()
+        .success(function (data) {
+           $scope.tasks = data;
+        });
 
     $scope.addTask = function() {
         var modalInstance = $modal.open({
@@ -40,6 +47,8 @@ app.controller('TasksController', function($scope, $modal) {
             size: 'sm'
         });
     }
+
+
 });
 
 app.factory('AuthFactory', function ($http, USER_TYPES) {
@@ -120,7 +129,6 @@ app.factory('RequestFactory', function ($http) {
     };
 
     factory.addTask = function(task) {
-        console.log(task);
         var promise = $http({
             method: 'POST',
             url: '/ajax/add_task.php',
@@ -128,6 +136,19 @@ app.factory('RequestFactory', function ($http) {
                 '&price=' + task.price,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         });
+        return promise;
+    };
+
+    factory.getTasks = function (offset) {
+        var promise = $http({
+           method: 'GET',
+            url: '/ajax/get_tasks.php',
+            data: function(offset) {return offset == undefined? '' : 'offset=' + offset;},
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+            .success(function(data){
+                console.log(data);
+            });
         return promise;
     };
 

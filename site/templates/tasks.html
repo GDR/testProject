@@ -37,26 +37,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td class="vert-align">Buy cheaps</td>
-                        <td class="vert-align">GosuGDR</td>
-                        <td class="vert-align">$14.50</td>
-                        <td class="vert-align"></td>
-                    </tr>
-                    <tr>
-                        <td class="vert-align">Buy cheaps</td>
-                        <td class="vert-align">GosuGDR</td>
-                        <td class="vert-align">$14.50</td>
-                        <td class="vert-align">
-                            <button type="button" class="btn btn-success btn-sm pull-right" >
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </button>
-                        </th>
-                    </tr>
-                    <tr>
-                        <td class="vert-align">Buy cheaps</td>
-                        <td class="vert-align">GosuGDR</td>
-                        <td class="vert-align">$14.50</td>
+
+
+                    <tr ng-repeat="task in tasks">
+                        <td class="vert-align">{{task.title}}</td>
+                        <td class="vert-align">{{task.username}}</td>
+                        <td class="vert-align">{{task.price}}</td>
                         <td class="vert-align"></td>
                     </tr>
                     </tbody>

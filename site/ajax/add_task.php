@@ -8,15 +8,15 @@ $username = '';
 $taskPrice = -1;
 $taskTitle = '';
 
-if (isset($_POST[TASK_TITLE])) {
-    $taskTitle = $_POST[TASK_TITLE];
+if (isset($_POST[FIELD_TITLE])) {
+    $taskTitle = $_POST[FIELD_TITLE];
 } else {
     show_error('Task title should be not empty', 403);
 }
 
-if (isset($_POST[TASK_PRICE])) {
-    if (is_numeric($_POST[TASK_PRICE])) {
-        $taskPrice = floatval($_POST[TASK_PRICE]);
+if (isset($_POST[FIELD_PRICE])) {
+    if (is_numeric($_POST[FIELD_PRICE])) {
+        $taskPrice = floatval($_POST[FIELD_PRICE]);
     } else {
         show_error('Price must be float', 403);
     }
