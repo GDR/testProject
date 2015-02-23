@@ -29,10 +29,17 @@ app.controller('AboutController', function ($scope) {
     $scope.subTitle = 'Service which helps you to find a performer for your tasks';
 });
 
-app.controller('TasksController', function($scope) {
+app.controller('TasksController', function($scope, $modal) {
     $scope.title = 'Labor Exchange test project';
     $scope.subTitle = 'Service which helps you to find a performer for your tasks';
 
+    $scope.addTask = function() {
+        var modalInstance = $modal.open({
+            templateUrl: 'templates/modal/add_task.html',
+            controller: 'ModalAddTaskController',
+            size: 'sm'
+        });
+    }
 });
 
 app.factory('AuthFactory', function ($http, USER_TYPES) {
@@ -107,6 +114,18 @@ app.factory('RequestFactory', function ($http) {
             data: 'username=' + username +
             '&password=' + password +
             '&user_type=' + userType,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        });
+        return promise;
+    };
+
+    factory.addTask = function(task) {
+        console.log(task);
+        var promise = $http({
+            method: 'POST',
+            url: '/ajax/add_task.php',
+            data: 'title=' + task.title +
+                '&price=' + task.price,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         });
         return promise;
@@ -222,4 +241,27 @@ app.controller('ModalSignUpController', function ($scope, $modalInstance, USER_T
     $scope.close = function () {
         $modalInstance.dismiss();
     };
+});
+
+app.controller('ModalAddTaskController', function ($scope, $modalInstance, RequestFactory) {
+    $scope.task = {
+        title: '',
+        price: 5.99
+    };
+
+    $scope.error = null;
+
+    $scope.addTask = function() {
+        RequestFactory.addTask($scope.task)
+            .success(function() {
+                $modalInstance.close();
+            })
+            .error(function(data, status) {
+                $scope.error = data.reason;
+            });
+    }
+
+    $scope.close = function () {
+        $modalInstance.dismiss();
+    }
 });
