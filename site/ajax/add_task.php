@@ -61,6 +61,15 @@ if (mysqli_stmt_prepare($add_task_statement, $query)) {
     if (mysqli_stmt_affected_rows($add_task_statement) != 1) {
         show_error_stmt('Error while adding task', 500, $db_connection, $add_task_statement);
     }
+    $taskId = mysqli_stmt_insert_id($add_task_statement);
 } else {
     show_error_stmt('Error connecting to database', 500, $db_connection, $add_task_statement);
 }
+
+echo json_encode(array(
+    FIELD_TASK_ID => $taskId,
+    FIELD_TITLE => $taskTitle,
+    FIELD_USER_ID => $userId,
+    FIELD_USERNAME => $username,
+    FIELD_PRICE => $taskPrice
+));

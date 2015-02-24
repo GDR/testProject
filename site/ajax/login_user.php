@@ -5,7 +5,6 @@
  * Gets from POST request username and password
  */
 
-require_once(__DIR__ . "/../utils/database_util.php");
 require_once(__DIR__ . "/../utils/app_utils.php");
 
 header('Content-Type: application/json');
@@ -18,26 +17,20 @@ $password = null;
 $response = array();
 
 // Check username
-if (isset($_POST['username'])) {
-    $username = $_POST['username'];
+if (isset($_POST[FIELD_USERNAME])) {
+    $username = $_POST[FIELD_USERNAME];
 } else {
-    $response['reason'] = 'Username must not be empty';
+    show_error('Username must not be empty', 403);
 }
 
 // Check password
-if (isset($_POST['password'])) {
-    $password = $_POST['password'];
+if (isset($_POST[FIELD_PASSWORD])) {
+    $password = $_POST[FIELD_PASSWORD];
 } else {
-    $response['reason'] = 'Password must not be empty';
+    show_error('Password must not be empty', 403);
 }
 
-if (isset($response['reason'])) {
-    http_response_code(403);
-    echo json_encode($response);
-
-    mysqli_close($db_connection);
-    exit();
-}
+require_once(__DIR__ . "/../utils/database_util.php");
 
 $query = "SELECT userId, userType, password FROM `users` WHERE username = ? LIMIT 1;";
 $select_user_statement = mysqli_stmt_init($db_connection);
@@ -50,11 +43,7 @@ if (mysqli_stmt_prepare($select_user_statement, $query)) {
     // Check if we found some user
     if (mysqli_stmt_num_rows($select_user_statement) != 1) {
         // If we didn't find than response with 401 Auth fail
-        http_response_code(401);
-
-        mysqli_stmt_close($select_user_statement);
-        mysqli_close($db_connection);
-        exit();
+        show_error_stmt('Wrong username or password', 401, $db_connection, $select_user_statement);
     }
     // In other way if we found user lets check his password
     mysqli_stmt_bind_result($select_user_statement, $user_id, $user_type, $password_database);
@@ -62,10 +51,7 @@ if (mysqli_stmt_prepare($select_user_statement, $query)) {
 
     if (!password_verify($password, $password_database)) {
         // If it's not equal than response with 401 Auth fail
-        http_response_code(401);
-        mysqli_stmt_close($select_user_statement);
-        mysqli_close($db_connection);
-        exit();
+        show_error_stmt('Wrong username or password', 401, $db_connection, $select_user_statement);
     } else {
         // Otherwise lets store credentials in session
         session_start();
@@ -77,11 +63,12 @@ if (mysqli_stmt_prepare($select_user_statement, $query)) {
         );
 
         $response[FIELD_USERNAME] = $username;
+        $response[FIELD_USER_ID] = $user_id;
         $response[FIELD_USER_TYPE] = $user_type;
         die (json_encode($response));
     }
 } else {
-    http_response_code(401);
+    show_error_stmt('', 500, $db_connection, $select_user_statement);
 }
 
 mysqli_stmt_close($select_user_statement);

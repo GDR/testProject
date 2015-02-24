@@ -1,18 +1,22 @@
 <?php
+
 DEFINE("USER_CUSTOMER", '0');
 DEFINE("USER_PERFORMER", '1');
 
 DEFINE("USERNAME", "username");
 DEFINE("PASSWORD", "password");
-DEFINE("USERTYPE", "user_type");
+DEFINE("USERTYPE", "userType");
 
 DEFINE("FIELD_TITLE", "title");
 DEFINE("FIELD_PRICE", "price");
+DEFINE("FIELD_PASSWORD", 'password');
 
 DEFINE("FIELD_USERNAME", 'username');
-DEFINE("FIELD_USER_ID", 'user_id');
-DEFINE("FIELD_USER_TYPE", 'user_type');
-DEFINE("FIELD_TASK_ID", 'task_id');
+DEFINE("FIELD_USER_ID", 'userId');
+DEFINE("FIELD_USER_TYPE", 'userType');
+DEFINE("FIELD_TASK_ID", 'taskId');
+
+DEFINE("REASON", 'reason');
 
 DEFINE("SESSION_USER", 'user');
 
@@ -53,7 +57,7 @@ function get_user_type() {
 
 function show_error($error, $http_code) {
     http_response_code($http_code);
-    die (json_encode(array('reason' => $error)));
+    die (json_encode(array(REASON => $error)));
 }
 
 function show_error_db($error, $http_code, $db) {
