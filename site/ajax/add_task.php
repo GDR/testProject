@@ -45,31 +45,33 @@ $commission /= 100;
 require_once(__DIR__ . "/../utils/database_util.php");
 
 $add_task_statement = mysqli_stmt_init($db_connection);
-$query = "INSERT INTO tasks(title, fromUserId, fromUsername, price, comission, ts) VALUE (?, ?, ?, ?, ?, ?);";
+$query = "INSERT INTO issues (title, fromUserId, fromUsername, price, commission) VALUE (?, ?, ?, ?, ?);";
 
 if (mysqli_stmt_prepare($add_task_statement, $query)) {
-    mysqli_stmt_bind_param($add_task_statement, 'sisddi',
+    mysqli_stmt_bind_param($add_task_statement, 'sisdd',
         $taskTitle,
         $userId,
         $username,
         $taskPrice,
-        $commission,
-        get_current_time_in_mills());
+        $commission);
 
     mysqli_stmt_execute($add_task_statement);
 
     if (mysqli_stmt_affected_rows($add_task_statement) != 1) {
-        show_error_stmt('Error while adding task', 500, $db_connection, $add_task_statement);
+        show_error_stmt(mysqli_stmt_error($add_task_statement), 500, $db_connection, $add_task_statement);
     }
-    $taskId = mysqli_stmt_insert_id($add_task_statement);
+    $issueId = mysqli_stmt_insert_id($add_task_statement);
+
+    echo json_encode(array(
+        FIELD_TASK_ID => $issueId,
+        FIELD_TITLE => $taskTitle,
+        FIELD_USER_ID => $userId,
+        FIELD_USERNAME => $username,
+        FIELD_PRICE => $taskPrice
+    ));
 } else {
-    show_error_stmt('Error connecting to database', 500, $db_connection, $add_task_statement);
+    show_error_stmt(mysqli_stmt_error($add_task_statement), 500, $db_connection, $add_task_statement);
 }
 
-echo json_encode(array(
-    FIELD_TASK_ID => $taskId,
-    FIELD_TITLE => $taskTitle,
-    FIELD_USER_ID => $userId,
-    FIELD_USERNAME => $username,
-    FIELD_PRICE => $taskPrice
-));
+mysqli_stmt_close($add_task_statement);
+mysqli_close($db_connection);

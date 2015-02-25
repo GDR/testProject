@@ -38,5 +38,29 @@ requests.factory('RequestFactory', function($http, UtilsFactory) {
         return promise;
     };
 
+    factory.deleteTask = function(taskId) {
+        var promise = $http({
+           method: 'POST',
+            url: '/ajax/delete_task.php',
+            data: UtilsFactory.prepareData({
+                taskId: taskId
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        });
+        return promise;
+    };
+
+    factory.completeTask = function(taskId) {
+        var promise = $http({
+            method: 'POST',
+            url: '/ajax/complete_task.php',
+            data: UtilsFactory.prepareData({
+                taskId: taskId
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        });
+        return promise;
+    };
+
     return factory;
 });

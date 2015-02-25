@@ -33,7 +33,7 @@ if (mysqli_stmt_prepare($get_tasks_statement, $query)) {
     }
     echo (json_encode($response));
 } else {
-    show_error_stmt('Error connecting to db: '.mysqli_stmt_error($get_tasks_statement), 500, $db_connection, $get_tasks_statement);
+    show_error_stmt('', 500, $db_connection, $get_tasks_statement);
 }
 
 mysqli_stmt_close($get_tasks_statement);

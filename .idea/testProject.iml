@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="angular.js" level="application" />
     <orderEntry type="library" name="angular.js" level="project" />
+    <orderEntry type="library" name="angular.min.js" level="project" />
   </component>
 </module>

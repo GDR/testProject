@@ -43,6 +43,22 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
 
     $scope.tasks = {};
 
+    $scope.deleteTask = function(task) {
+      RequestFactory.deleteTask(task.taskId)
+          .success(function() {
+              var idx = $scope.tasks.indexOf(task);
+              $scope.tasks.splice(idx, 1);
+          });
+    };
+
+    $scope.completeTask = function(task) {
+        RequestFactory.completeTask(task.taskId)
+            .success(function () {
+                var idx = $scope.tasks.indexOf(task);
+                $scope.tasks.splice(idx, 1);
+            })
+    };
+
     RequestFactory.getTasks()
         .success(function (data) {
             $scope.tasks = data;
@@ -63,4 +79,5 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
 
 
 });
+
 

@@ -48,15 +48,17 @@
                         <td class="vert-align">{{task.title}}</td>
                         <td class="vert-align">{{task.username}}</td>
                         <td class="vert-align">
-                            <span class="pull-right">{{task.price}}</span>
+                            <span class="pull-right">{{task.price | currency}}</span>
                         </td>
                         <td class="vert-align">
                             <button type="button" class="btn btn-sm btn-danger pull-right"
-                                    ng-show="user.userId == task.userId && user.userType == USER_TYPES_CONST.CUSTOMER">
+                                    ng-show="user.userId == task.userId && user.userType == USER_TYPES_CONST.CUSTOMER"
+                                    ng-click="deleteTask(task)">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                             <button type="button" class="btn btn-sm btn-success pull-right"
-                                    ng-show="user.userType == USER_TYPES_CONST.PERFORMER">
+                                    ng-show="user.userType == USER_TYPES_CONST.PERFORMER"
+                                    ng-click="completeTask(task)">
                                 <span class="glyphicon glyphicon-ok"></span>
                             </button>
                         </td>
