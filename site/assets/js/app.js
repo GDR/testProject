@@ -57,6 +57,12 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
                 var idx = $scope.tasks.indexOf(task);
                 $scope.tasks.splice(idx, 1);
             })
+            .error(function(data){
+                if (data.reason == 'TaskDeleted') {
+                    var idx = $scope.tasks.indexOf(task);
+                    $scope.tasks.splice(idx, 1);
+                }
+            });
     };
 
     RequestFactory.getTasks()

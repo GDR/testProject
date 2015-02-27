@@ -17,6 +17,9 @@ if (isset($_POST[FIELD_TITLE])) {
 if (isset($_POST[FIELD_PRICE])) {
     if (is_numeric($_POST[FIELD_PRICE])) {
         $taskPrice = floatval($_POST[FIELD_PRICE]);
+        if ($taskPrice < MINIMAL_PRICE) {
+            show_error('Price must be at least $1', 403);
+        }
     } else {
         show_error('Price must be float', 403);
     }
@@ -45,15 +48,16 @@ $commission /= 100;
 require_once(__DIR__ . "/../utils/database_util.php");
 
 $add_task_statement = mysqli_stmt_init($db_connection);
-$query = "INSERT INTO issues (title, fromUserId, fromUsername, price, commission) VALUE (?, ?, ?, ?, ?);";
+$query = "INSERT INTO issues (title, fromUserId, fromUsername, price, commission, ts) VALUE (?, ?, ?, ?, ?, ?);";
 
 if (mysqli_stmt_prepare($add_task_statement, $query)) {
-    mysqli_stmt_bind_param($add_task_statement, 'sisdd',
+    mysqli_stmt_bind_param($add_task_statement, 'sisddi',
         $taskTitle,
         $userId,
         $username,
         $taskPrice,
-        $commission);
+        $commission,
+        get_current_time_in_mills());
 
     mysqli_stmt_execute($add_task_statement);
 

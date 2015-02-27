@@ -1,5 +1,4 @@
 <?php
-
 require_once(__DIR__ . "/../utils/app_utils.php");
 require_once(__DIR__ . "/../utils/database_util.php");
 header('Content-Type: application/json');
@@ -12,17 +11,17 @@ if (isset($_GET[FIELD_OFFSET])) {
     }
 }
 
-
-$query = "SELECT taskId, title, fromUserId, fromUsername, price FROM tasks WHERE tasks.taskId < ? AND taskType='O' AND sysblock = 'F' ORDER BY taskId DESC LIMIT " . GET_TASK_LIMIT . " ;";
+$query = "SELECT id, title, fromUserId, fromUsername, price FROM issues WHERE blocked='F' AND issueType='O' AND issues.id < ?
+         ORDER BY id DESC LIMIT ? ;";
 
 $get_tasks_statement = mysqli_stmt_init($db_connection);
 
 if (mysqli_stmt_prepare($get_tasks_statement, $query)) {
-    mysqli_stmt_bind_param($get_tasks_statement, 'i', $startingFrom);
+    mysqli_stmt_bind_param($get_tasks_statement, 'ii', $startingFrom, intval(GET_TASK_LIMIT));
     mysqli_stmt_execute($get_tasks_statement);
     mysqli_stmt_bind_result($get_tasks_statement, $taskId, $title, $fromUserId, $fromUsername, $price);
     $response = array();
-    while(mysqli_stmt_fetch($get_tasks_statement)) {
+    while (mysqli_stmt_fetch($get_tasks_statement)) {
         array_push($response, array(
             FIELD_TASK_ID => $taskId,
             FIELD_TITLE => $title,
@@ -31,7 +30,7 @@ if (mysqli_stmt_prepare($get_tasks_statement, $query)) {
             FIELD_PRICE => $price
         ));
     }
-    echo (json_encode($response));
+    echo(json_encode($response));
 } else {
     show_error_stmt('', 500, $db_connection, $get_tasks_statement);
 }

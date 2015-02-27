@@ -3,12 +3,11 @@
 DEFINE("USER_CUSTOMER", '0');
 DEFINE("USER_PERFORMER", '1');
 
-DEFINE("SYSBLOCK_FALSE", 'F');
-DEFINE("SYSBLOCK_TRUE", 'T');
-
 DEFINE("TASK_OPENED", 'O');
 DEFINE("TASK_DELETED", 'D');
 DEFINE("TASK_COMPLETED", 'C');
+DEFINE("MONEY_ADDED", 'A');
+
 
 DEFINE("USERNAME", "username");
 DEFINE("PASSWORD", "password");
@@ -17,6 +16,7 @@ DEFINE("USERTYPE", "userType");
 DEFINE("FIELD_TITLE", "title");
 DEFINE("FIELD_PRICE", "price");
 DEFINE("FIELD_PASSWORD", 'password');
+DEFINE("FIELD_AMOUNT", 'amount');
 
 DEFINE("FIELD_USERNAME", 'username');
 DEFINE("FIELD_USER_ID", 'userId');
@@ -32,6 +32,7 @@ DEFINE("FIELD_OFFSET", 'offset');
 DEFINE("GET_TASK_LIMIT", 20);
 
 DEFINE("COMMISSION", 0.20);
+DEFINE("MINIMAL_PRICE", 1);
 
 function check_authentication()
 {

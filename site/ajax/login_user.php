@@ -32,7 +32,7 @@ if (isset($_POST[FIELD_PASSWORD])) {
 
 require_once(__DIR__ . "/../utils/database_util.php");
 
-$query = "SELECT userId, userType, password FROM `users` WHERE username = ? LIMIT 1;";
+$query = "SELECT id, userType, password FROM `users` WHERE username = ? LIMIT 1;";
 $select_user_statement = mysqli_stmt_init($db_connection);
 if (mysqli_stmt_prepare($select_user_statement, $query)) {
     // Trying to find user in database with username which we got in POST request
@@ -68,7 +68,7 @@ if (mysqli_stmt_prepare($select_user_statement, $query)) {
         die (json_encode($response));
     }
 } else {
-    show_error_stmt('', 500, $db_connection, $select_user_statement);
+    show_error_stmt(mysqli_stmt_error($select_user_statement), 500, $db_connection, $select_user_statement);
 }
 
 mysqli_stmt_close($select_user_statement);

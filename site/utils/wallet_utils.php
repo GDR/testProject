@@ -3,8 +3,9 @@ require_once(__DIR__ . "/app_utils.php");
 
 function calc_user_wallet($db_connection, $user_id, $user_type)
 {
-
-    function add_wallet($user_id, $db_connection) {
+    // Function adds wallet if it's not exists
+    function add_wallet($user_id, $db_connection)
+    {
         $query_add = "INSERT IGNORE INTO wallets(userId, money, blocked, paid, ts) VALUE (?, 0, 0, 0, 0);";
         $add_wallet_statement = mysqli_stmt_init($db_connection);
         if (mysqli_stmt_prepare($add_wallet_statement, $query_add)) {
@@ -17,10 +18,6 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
         } else {
             show_error_stmt('', 500, $db_connection, $add_wallet_statement);
         }
-    }
-
-    function block_task($task_id, $db_connection) {
-        $query_block = "UPDATE wa"
     }
 
     $get_wallet_statement = mysqli_stmt_init($db_connection);
@@ -49,56 +46,115 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
         // So right now we have information about
         // user's account and so let's try to update this data
 
-        $get_tasks_statement = mysqli_stmt_init($db_connection);
-        $query = "SELECT taskId, fromUserId, toUserId, price, comission, taskType, sysblock, ts FROM tasks WHERE (fromUserId = ? OR toUserId = ?) AND (ts > ?) ORDER BY ts ASC;";
-        if (mysqli_stmt_prepare($get_tasks_statement, $query)) {
-            mysqli_stmt_bind_param($get_tasks_statement, 'iii', $user_id, $user_id, $ts);
-            mysqli_stmt_execute($get_tasks_statement);
-            mysqli_stmt_bind_result($get_tasks_statement,
-                $task_id,
-                $task_from_user_id,
-                $task_to_user_id,
-                $task_price,
-                $task_commission,
-                $task_type,
-                $task_sys_block);
-            if ($user_type == USER_CUSTOMER) {
-                while (mysqli_stmt_fetch($get_tasks_statement)) {
-                    $sum = $task_commission + $task_price;
-                    if ($task_sys_block == SYSBLOCK_FALSE) {
-                        if ($task_type == TASK_OPENED) {
-                            // The only bad thing which could happen if current amount of money
-                            // is more than user has
-                            $blocked += $sum;
-                            if ($balance < $blocked) {
-                                // If it happened than we have to remove this task from list of opened
-                                $blocked -= $sum;
+        if ($user_type == USER_CUSTOMER) {
+            // At first we have to calc adding money to user's balance and deleted tasks
 
-                            }
-                        }
-                        if ($task_type == TASK_COMPLETED) {
-                            $balance -= $sum;
-                            $blocked -= $sum;
-                            $paid += $sum;
-                        }
-                        if ($task_type == TASK_DELETED) {
-                            $blocked -= $sum;
-                        }
-                    }
+            // Calc added money
+            $query = "SELECT price FROM issues WHERE issueType = 'A' AND toUserId = ? AND ts > ?;";
+            $get_added_balance_statement = mysqli_stmt_init($db_connection);
+            if (mysqli_stmt_prepare($get_added_balance_statement, $query)) {
+                mysqli_stmt_bind_param($get_added_balance_statement, 'ii', $user_id, $ts);
+                mysqli_stmt_execute($get_added_balance_statement);
+                mysqli_stmt_bind_result($get_added_balance_statement, $added);
+                while (mysqli_stmt_fetch($get_added_balance_statement)) {
+                    $balance += $added;
+                }
+            } else {
+                show_error_stmt(mysqli_stmt_error($get_added_balance_statement), 500, $db_connection, $get_added_balance_statement);
+            }
+            mysqli_stmt_close($get_added_balance_statement);
+            // Calc deleted tasks
 
-                    if ($task_sys_block == SYSBLOCK_TRUE) {
+            $query = "SELECT price, commission, ts FROM issues WHERE issueType = 'D' AND fromUserId = ? AND tsEdited > ?;";
 
+            $get_deleted_tasks_statement = mysqli_stmt_init($db_connection);
+            if (mysqli_stmt_prepare($get_deleted_tasks_statement, $query)) {
+                mysqli_stmt_bind_param($get_deleted_tasks_statement, 'ii', $user_id, $ts);
+                mysqli_stmt_execute($get_deleted_tasks_statement);
+                mysqli_stmt_bind_result($get_deleted_tasks_statement, $price, $commission, $db_ts);
+                while (mysqli_stmt_fetch($get_deleted_tasks_statement)) {
+                    if ($db_ts <= $ts) {
+                        $sum = $price + $commission;
+                        $balance += $sum;
+                        $blocked -= $sum;
                     }
                 }
+            } else {
+                show_error_stmt(mysqli_stmt_error($get_deleted_tasks_statement), 500, $db_connection, $get_deleted_tasks_statement);
             }
-            if ($user_type == USER_PERFORMER) {
+            mysqli_stmt_close($get_deleted_tasks_statement);
 
+            // Calc opened tasks
+            $taskToBlock = array();
+            $query = "SELECT id, price, commission FROM issues WHERE (issueType = 'O' OR issueType = 'C') AND fromUserId = ? AND ts > ?;";
+            $get_added_tasks_statement = mysqli_stmt_init($db_connection);
+            if (mysqli_stmt_prepare($get_added_tasks_statement, $query)) {
+                mysqli_stmt_bind_param($get_added_tasks_statement, 'ii', $user_id, $ts);
+                mysqli_stmt_execute($get_added_tasks_statement);
+                mysqli_stmt_bind_result($get_added_tasks_statement,$id, $price, $commission);
+                while (mysqli_stmt_fetch($get_added_tasks_statement)) {
+                    $sum = $price + $commission;
+                    if ($balance - $sum < 0) {
+                        array_push($taskToBlock, $id);
+                    } else {
+                        $balance -= $sum;
+                        $blocked += $sum;
+                    }
+                }
+            } else {
+                show_error_stmt(mysqli_stmt_error($get_added_tasks_statement), 500, $db_connection, $get_added_tasks_statement);
             }
-        } else {
-            show_error_stmt('', 500, $db_connection, $get_tasks_statement);
+            mysqli_stmt_close($get_added_tasks_statement);
+
+            // Delete tasks which takes more than our limit
+
+            $query = "UPDATE issues SET issueType = 'D', tsEdited = ? WHERE id = ? AND issueType = 'O';";
+            $set_deleted_tasks_statement = mysqli_stmt_init($db_connection);
+            if (mysqli_stmt_prepare($set_deleted_tasks_statement, $query)) {
+                foreach ($taskToBlock as $id) {
+                    mysqli_stmt_bind_param($set_deleted_tasks_statement, 'ii',
+                        get_current_time_in_mills(),
+                        $id
+                        );
+                    mysqli_stmt_execute($set_deleted_tasks_statement);
+                }
+            } else {
+                show_error_stmt(mysqli_stmt_error($set_deleted_tasks_statement), 500, $db_connection, $set_deleted_tasks_statement);
+            }
+
+            // Calc completed tasks
+
+            $query = "SELECT price, commission FROM issues WHERE issueType='C' AND fromUserId = ? AND tsEdited > ?;";
+            $get_completed_tasks_statement = mysqli_stmt_init($db_connection);
+            if (mysqli_stmt_prepare($get_completed_tasks_statement, $query)) {
+                mysqli_stmt_bind_param($get_completed_tasks_statement, 'ii', $user_id, $ts);
+                mysqli_stmt_execute($get_completed_tasks_statement);
+                mysqli_stmt_bind_result($get_completed_tasks_statement, $price, $commission);
+                while (mysqli_stmt_fetch($get_completed_tasks_statement)) {
+                    $sum = $price + $commission;
+                    $blocked -= $sum;
+                    $paid += $sum;
+                }
+            }
         }
+        if ($user_type == USER_PERFORMER) {
+            $query = "SELECT price FROM issues WHERE issueType='C' AND toUserId = ? AND tsEdited > ?;";
+            $get_completed_tasks_statement = mysqli_stmt_init($db_connection);
+            if (mysqli_stmt_prepare($get_completed_tasks_statement, $query)) {
+                mysqli_stmt_bind_param($get_completed_tasks_statement, 'ii', $user_id, $ts);
+                mysqli_stmt_execute($get_completed_tasks_statement);
+                mysqli_stmt_bind_result($get_completed_tasks_statement, $price);
+                while (mysqli_stmt_fetch($get_completed_tasks_statement)) {
+                    $balance += $price;
+                }
+            }
+        }
+
     } else {
         show_error_stmt('', 500, $db_connection, $get_wallet_statement);
     }
+    $balance = round($balance * 100) / 100;
+    $blocked = round($blocked * 100) / 100;
+    $paid = round($paid * 100) / 100;
     return array($balance, $blocked, $paid);
 }
