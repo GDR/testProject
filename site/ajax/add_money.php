@@ -22,7 +22,7 @@ if (isset($_POST[FIELD_AMOUNT])) {
 $userId = get_user_id();
 
 if ($userId == -1) {
-    show_error('You are not logged in', 403);
+    show_error('You are not logged in', 401);
 }
 
 require_once(__DIR__ . "/../utils/database_util.php");

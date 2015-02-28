@@ -62,5 +62,26 @@ requests.factory('RequestFactory', function($http, UtilsFactory) {
         return promise;
     };
 
+    factory.getWallet = function () {
+        var promise = $http({
+            method: 'GET',
+            url: '/ajax/get_wallet.php',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        });
+        return promise;
+    };
+
+    factory.addMoney = function (money) {
+        var promise = $http({
+            method: 'POST',
+            url: '/ajax/add_money.php',
+            data: UtilsFactory.prepareData({
+                amount: money
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        });
+        return promise;
+    };
+
     return factory;
 });

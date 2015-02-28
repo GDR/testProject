@@ -43,6 +43,19 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
 
     $scope.tasks = {};
 
+
+    RequestFactory.getTasks()
+        .success(function (data) {
+            $scope.tasks = data;
+        });
+
+    $scope.wallet = {};
+
+    RequestFactory.getWallet()
+        .success(function(data) {
+            $scope.wallet = data;
+        });
+
     $scope.deleteTask = function(task) {
       RequestFactory.deleteTask(task.taskId)
           .success(function() {
@@ -65,10 +78,6 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
             });
     };
 
-    RequestFactory.getTasks()
-        .success(function (data) {
-            $scope.tasks = data;
-        });
 
     $scope.addTask = function () {
         var modalInstance = $modal.open({
@@ -81,6 +90,22 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
                 $scope.tasks.unshift(data);
                 toaster.success("Task added", "Your task has been completely added");
             });
+    };
+
+    $scope.addMoney = function () {
+        var modalInstance = $modal.open({
+            templateUrl: 'templates/modal/add_money.html',
+            controller: 'ModalAddMoneyController',
+            size: 'sm'
+        });
+        modalInstance.result.then(
+            function(data) {
+                console.log($scope.wallet.balance + " " + data + " " + (parseFloat($scope.wallet.balance) + parseFloat(data)));
+                $scope.wallet.balance = parseFloat(parseFloat($scope.wallet.balance) + parseFloat(data));
+
+                toaster.success("You successfully added money");
+            }
+        );
     }
 
 

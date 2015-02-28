@@ -39,6 +39,7 @@ if ($userType != USER_CUSTOMER) {
     show_error('You are not customer', 403);
 }
 
+
 $taskPrice = floor($taskPrice * 100);
 $commission = ceil($taskPrice * COMMISSION);
 $taskPrice -= $commission;
@@ -46,6 +47,13 @@ $taskPrice /= 100;
 $commission /= 100;
 
 require_once(__DIR__ . "/../utils/database_util.php");
+
+require_once(__DIR__. "/../utils/wallet_utils.php");
+$wallet = calc_user_wallet($db_connection, $userId, $userType);
+
+if ($wallet['balance'] < $taskPrice + $commission) {
+    show_error_db('Not enough money', 403, $db_connection);
+}
 
 $add_task_statement = mysqli_stmt_init($db_connection);
 $query = "INSERT INTO issues (title, fromUserId, fromUsername, price, commission, ts) VALUE (?, ?, ?, ?, ?, ?);";

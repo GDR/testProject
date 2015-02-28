@@ -72,3 +72,24 @@ modals.controller('ModalAddTaskController', function ($scope, $modalInstance, Re
         $modalInstance.dismiss();
     }
 });
+
+modals.controller('ModalAddMoneyController', function ($scope, $modalInstance, RequestFactory) {
+    $scope.money = 0;
+
+    $scope.error = null;
+
+    $scope.addMoney = function () {
+        RequestFactory.addMoney($scope.money)
+            .success(function () {
+                $modalInstance.close($scope.money);
+            })
+
+            .error(function (data, status) {
+                $scope.error = data.reason;
+            });
+    };
+
+    $scope.close = function() {
+        $modalInstance.dismiss();
+    }
+});

@@ -11,7 +11,7 @@ DEFINE("MONEY_ADDED", 'A');
 
 DEFINE("USERNAME", "username");
 DEFINE("PASSWORD", "password");
-DEFINE("USERTYPE", "userType");
+DEFINE("USER_TYPE", "userType");
 
 DEFINE("FIELD_TITLE", "title");
 DEFINE("FIELD_PRICE", "price");

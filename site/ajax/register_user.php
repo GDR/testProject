@@ -33,8 +33,8 @@ if (isset($_POST[PASSWORD])) {
 } else {
     $response['reason'] = 'Password must not be empty';
 }
-if (isset($_POST[USERTYPE])) {
-    $userType = $_POST[USERTYPE];
+if (isset($_POST[USER_TYPE])) {
+    $userType = $_POST[USER_TYPE];
     if ($userType != USER_CUSTOMER && $userType != USER_PERFORMER) {
         $response['reason'] = 'Incorrect user type';
     }

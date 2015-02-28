@@ -7,7 +7,26 @@
                     Account
                 </div>
                 <div class="panel-body">
-                    You have: $4.50
+                    <div class="form-group">
+                        You have
+                        <div class="pull-right">
+                            <b>{{wallet.balance | currency}}</b>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="form-group">
+                        Blocked
+                        <div class="pull-right">
+                            <b>{{wallet.blocked | currency}}</b>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="form-group">
+                        <div class="btn btn-success btn-block" ng-click="addMoney()">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
+                            Add money
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
