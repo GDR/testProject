@@ -1,25 +1,25 @@
 <?php
 require_once(__DIR__ . "/app_utils.php");
 
-function calc_user_wallet($db_connection, $user_id, $user_type)
+// Function adds wallet if it's not exists
+function add_wallet($user_id, $db_connection)
 {
-    // Function adds wallet if it's not exists
-    function add_wallet($user_id, $db_connection)
-    {
-        $query_add = "INSERT IGNORE INTO wallets(userId, money, blocked, paid, ts) VALUE (?, 0, 0, 0, 0);";
-        $add_wallet_statement = mysqli_stmt_init($db_connection);
-        if (mysqli_stmt_prepare($add_wallet_statement, $query_add)) {
-            mysqli_stmt_bind_param($add_wallet_statement, 'i', $user_id);
-            mysqli_stmt_execute($add_wallet_statement);
-            if (mysqli_stmt_affected_rows($add_wallet_statement) != 1) {
-                show_error_stmt(mysqli_stmt_error($add_wallet_statement), 500, $db_connection, $add_wallet_statement);
-            }
-            mysqli_stmt_close($add_wallet_statement);
-        } else {
+    $query_add = "INSERT IGNORE INTO wallets(userId, money, blocked, paid, ts) VALUE (?, 0, 0, 0, 0);";
+    $add_wallet_statement = mysqli_stmt_init($db_connection);
+    if (mysqli_stmt_prepare($add_wallet_statement, $query_add)) {
+        mysqli_stmt_bind_param($add_wallet_statement, 'i', $user_id);
+        mysqli_stmt_execute($add_wallet_statement);
+        if (mysqli_stmt_affected_rows($add_wallet_statement) != 1) {
             show_error_stmt(mysqli_stmt_error($add_wallet_statement), 500, $db_connection, $add_wallet_statement);
         }
+        mysqli_stmt_close($add_wallet_statement);
+    } else {
+        show_error_stmt(mysqli_stmt_error($add_wallet_statement), 500, $db_connection, $add_wallet_statement);
     }
+}
 
+function calc_user_wallet($db_connection, $user_id, $user_type)
+{
     $get_wallet_statement = mysqli_stmt_init($db_connection);
     $balance = 0;
     $blocked = 0;
