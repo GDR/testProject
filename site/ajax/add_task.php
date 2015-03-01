@@ -48,13 +48,14 @@ $commission /= 100;
 
 require_once(__DIR__ . "/../utils/database_util.php");
 
-require_once(__DIR__. "/../utils/wallet_utils.php");
+require_once(__DIR__ . "/../utils/wallet_utils.php");
 $wallet = calc_user_wallet($db_connection, $userId, $userType);
 
 if ($wallet['balance'] < $taskPrice + $commission) {
     show_error_db('Not enough money', 403, $db_connection);
 }
-
+$wallet['balance'] -= $taskPrice + $commission;
+$wallet['blocked'] += $taskPrice + $commission;
 $add_task_statement = mysqli_stmt_init($db_connection);
 $query = "INSERT INTO issues (title, fromUserId, fromUsername, price, commission, ts) VALUE (?, ?, ?, ?, ?, ?);";
 
@@ -74,13 +75,16 @@ if (mysqli_stmt_prepare($add_task_statement, $query)) {
     }
     $issueId = mysqli_stmt_insert_id($add_task_statement);
 
-    echo json_encode(array(
-        FIELD_TASK_ID => $issueId,
-        FIELD_TITLE => $taskTitle,
-        FIELD_USER_ID => $userId,
-        FIELD_USERNAME => $username,
-        FIELD_PRICE => $taskPrice
-    ));
+    $response = array('wallet' => $wallet,
+        'task' => array(
+            FIELD_TASK_ID => $issueId,
+            FIELD_TITLE => $taskTitle,
+            FIELD_USER_ID => $userId,
+            FIELD_USERNAME => $username,
+            FIELD_PRICE => $taskPrice
+        ));
+
+    echo json_encode($response);
 } else {
     show_error_stmt(mysqli_stmt_error($add_task_statement), 500, $db_connection, $add_task_statement);
 }

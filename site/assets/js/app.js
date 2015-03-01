@@ -99,7 +99,8 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
         });
         modalInstance.result.then(
             function (data) {
-                $scope.tasks.unshift(data);
+                $scope.wallet = data.wallet;
+                $scope.tasks.unshift(data.task);
                 toaster.success("Task added", "Your task has been completely added");
             });
     };
