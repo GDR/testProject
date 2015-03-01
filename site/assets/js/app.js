@@ -31,10 +31,10 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
     $scope.user = $rootScope.user;
 
     $scope.$watch(
-        function() {
+        function () {
             return $rootScope.user;
         },
-        function(newVal) {
+        function (newVal) {
             $scope.user = newVal;
         }
     );
@@ -43,34 +43,45 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
 
     $scope.tasks = {};
 
+    $scope.hasMore = true;
+
+    var minId = null;
+
+    var updateMinId = function (task) {
+        if (minId == null) {
+            minId = task.taskId;
+        }
+        minId = Math.min(task.taskId, minId);
+    };
 
     RequestFactory.getTasks()
         .success(function (data) {
             $scope.tasks = data;
+            data.forEach(updateMinId);
         });
 
     $scope.wallet = {};
 
     RequestFactory.getWallet()
-        .success(function(data) {
+        .success(function (data) {
             $scope.wallet = data;
         });
 
-    $scope.deleteTask = function(task) {
-      RequestFactory.deleteTask(task.taskId)
-          .success(function() {
-              var idx = $scope.tasks.indexOf(task);
-              $scope.tasks.splice(idx, 1);
-          });
+    $scope.deleteTask = function (task) {
+        RequestFactory.deleteTask(task.taskId)
+            .success(function () {
+                var idx = $scope.tasks.indexOf(task);
+                $scope.tasks.splice(idx, 1);
+            });
     };
 
-    $scope.completeTask = function(task) {
+    $scope.completeTask = function (task) {
         RequestFactory.completeTask(task.taskId)
             .success(function () {
                 var idx = $scope.tasks.indexOf(task);
                 $scope.tasks.splice(idx, 1);
             })
-            .error(function(data){
+            .error(function (data) {
                 if (data.reason == 'TaskDeleted') {
                     var idx = $scope.tasks.indexOf(task);
                     $scope.tasks.splice(idx, 1);
@@ -99,14 +110,26 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
             size: 'sm'
         });
         modalInstance.result.then(
-            function(data) {
+            function (data) {
                 console.log($scope.wallet.balance + " " + data + " " + (parseFloat($scope.wallet.balance) + parseFloat(data)));
                 $scope.wallet.balance = parseFloat(parseFloat($scope.wallet.balance) + parseFloat(data));
 
                 toaster.success("You successfully added money");
             }
         );
-    }
+    };
+
+    $scope.loadMore = function () {
+        RequestFactory.getTasks(minId)
+            .success(function (data) {
+                data.forEach(updateMinId);
+                if (data.length == 0) {
+                    $scope.hasMore = false;
+                } else {
+                    $scope.tasks = $scope.tasks.concat(data);
+                }
+            });
+    };
 
 
 });
