@@ -11,8 +11,9 @@ if (!check_authentication()) {
 $taskId = null;
 $username = get_username();
 $userId = get_user_id();
+$user_type = get_user_type();
 
-if ($userId == -1 || $username == null) {
+if ($userId == -1 || $username == null || $user_type == -1) {
     show_error('You must be logged in', 401);
 }
 
@@ -57,6 +58,7 @@ if (mysqli_stmt_prepare($complete_tasks_statement, $query)) {
     show_error_stmt(mysqli_stmt_error($complete_tasks_statement), 500, $db_connection, $complete_tasks_statement);
 }
 
+echo json_encode(calc_user_wallet($db_connection, $userId, $user_type));
 
 mysqli_stmt_close($complete_tasks_statement);
 mysqli_close($db_connection);

@@ -62,6 +62,18 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
 
     $scope.wallet = {};
 
+    $scope.$watch(
+        function () {
+            return $rootScope.user;
+        },
+        function () {
+            RequestFactory.getWallet()
+                .success(function (data) {
+                    $scope.wallet = data;
+                });
+        }
+    );
+
     RequestFactory.getWallet()
         .success(function (data) {
             $scope.wallet = data;
@@ -78,7 +90,8 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
 
     $scope.completeTask = function (task) {
         RequestFactory.completeTask(task.taskId)
-            .success(function () {
+            .success(function (data) {
+                $scope.wallet = data;
                 var idx = $scope.tasks.indexOf(task);
                 $scope.tasks.splice(idx, 1);
             })
