@@ -19,6 +19,8 @@ if (isset($_POST[FIELD_AMOUNT])) {
     show_error('Amount of money should be not empty', 403);
 }
 
+$moneyAmount = (floor($moneyAmount * 100)) / 100;
+echo $moneyAmount;
 $userId = get_user_id();
 
 if ($userId == -1) {
@@ -31,7 +33,7 @@ $add_money_statement = mysqli_stmt_init($db_connection);
 $query = "INSERT INTO issues(title, fromUserId, fromUsername, toUserId, price, issueType, ts) VALUE ('', 0, 'Sys', ?, ?, 'A', ?)";
 
 if (mysqli_stmt_prepare($add_money_statement, $query)) {
-    mysqli_stmt_bind_param($add_money_statement, 'iii',
+    mysqli_stmt_bind_param($add_money_statement, 'idi',
         $userId,
         $moneyAmount,
         get_current_time_in_mills()
