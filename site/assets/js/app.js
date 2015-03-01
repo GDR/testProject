@@ -69,9 +69,10 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
 
     $scope.deleteTask = function (task) {
         RequestFactory.deleteTask(task.taskId)
-            .success(function () {
+            .success(function (data) {
                 var idx = $scope.tasks.indexOf(task);
                 $scope.tasks.splice(idx, 1);
+                $scope.wallet = data;
             });
     };
 
