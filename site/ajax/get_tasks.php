@@ -3,7 +3,7 @@ require_once(__DIR__ . "/../utils/app_utils.php");
 require_once(__DIR__ . "/../utils/database_util.php");
 header('Content-Type: application/json');
 
-$startingFrom = 1000000;
+$startingFrom = -1;
 
 if (isset($_GET[FIELD_OFFSET])) {
     if (is_numeric($_GET[FIELD_OFFSET])) {
@@ -11,13 +11,25 @@ if (isset($_GET[FIELD_OFFSET])) {
     }
 }
 
-$query = "SELECT id, title, fromUserId, fromUsername, price FROM issues WHERE blocked='F' AND issueType='O' AND issues.id < ?
-         ORDER BY id DESC LIMIT ? ;";
+$queryOffset = '';
+
+if ($startingFrom != -1) {
+    $queryOffset = " AND issues.id < ?";
+}
+
+$query = "SELECT id, title, fromUserId, fromUsername, price"
+    . " FROM issues WHERE blocked='F' AND issueType='O'"
+    . $queryOffset
+    . " ORDER BY id DESC LIMIT ?;";
 
 $get_tasks_statement = mysqli_stmt_init($db_connection);
 
 if (mysqli_stmt_prepare($get_tasks_statement, $query)) {
-    mysqli_stmt_bind_param($get_tasks_statement, 'ii', $startingFrom, intval(GET_TASK_LIMIT));
+    if ($startingFrom == -1) {
+        mysqli_stmt_bind_param($get_tasks_statement, 'i', intval(GET_TASK_LIMIT));
+    } else {
+        mysqli_stmt_bind_param($get_tasks_statement, 'ii', $startingFrom, intval(GET_TASK_LIMIT));
+    }
     mysqli_stmt_execute($get_tasks_statement);
     mysqli_stmt_bind_result($get_tasks_statement, $taskId, $title, $fromUserId, $fromUsername, $price);
     $response = array();

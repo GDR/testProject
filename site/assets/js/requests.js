@@ -24,12 +24,15 @@ requests.factory('RequestFactory', function($http, UtilsFactory) {
     };
 
     factory.getTasks = function (offset) {
+        console.log(offset);
+        var q = '';
+        if (offset != undefined) {
+            q = 'offset=' + offset;
+        }
+        console.log(q);
         var promise = $http({
             method: 'GET',
-            url: '/ajax/get_tasks.php',
-            data: function (offset) {
-                return offset == undefined ? '' : 'offset=' + offset;
-            },
+            url: '/ajax/get_tasks.php?' + q,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         })
             .success(function (data) {
