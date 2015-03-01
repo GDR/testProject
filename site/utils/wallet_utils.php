@@ -12,11 +12,11 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
             mysqli_stmt_bind_param($add_wallet_statement, 'i', $user_id);
             mysqli_stmt_execute($add_wallet_statement);
             if (mysqli_stmt_affected_rows($add_wallet_statement) != 1) {
-                show_error_stmt('', 500, $db_connection, $add_wallet_statement);
+                show_error_stmt(mysqli_stmt_error($add_wallet_statement), 500, $db_connection, $add_wallet_statement);
             }
             mysqli_stmt_close($add_wallet_statement);
         } else {
-            show_error_stmt('', 500, $db_connection, $add_wallet_statement);
+            show_error_stmt(mysqli_stmt_error($add_wallet_statement), 500, $db_connection, $add_wallet_statement);
         }
     }
 
@@ -26,6 +26,7 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
     $paid = 0;
     $ts = 0;
     $newTs = 0;
+
     // Try to get wallet from DB
     $query = "SELECT money, blocked, paid, ts FROM wallets WHERE userId = ?;";
     if (mysqli_stmt_prepare($get_wallet_statement, $query)) {
@@ -73,14 +74,14 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
             if (mysqli_stmt_prepare($get_deleted_tasks_statement, $query)) {
                 mysqli_stmt_bind_param($get_deleted_tasks_statement, 'ii', $user_id, $ts);
                 mysqli_stmt_execute($get_deleted_tasks_statement);
-                mysqli_stmt_bind_result($get_deleted_tasks_statement, $price, $commission, $db_ts);
+                mysqli_stmt_bind_result($get_deleted_tasks_statement, $price, $commission, $db_ts, $db_tsEdited);
                 while (mysqli_stmt_fetch($get_deleted_tasks_statement)) {
                     if ($db_ts <= $ts) {
                         $sum = $price + $commission;
                         $balance += $sum;
                         $blocked -= $sum;
                     }
-                    $newTs = max($newTs, $db_ts);
+                    $newTs = max($newTs, $db_ts, $db_tsEdited);
                 }
             } else {
                 show_error_stmt(mysqli_stmt_error($get_deleted_tasks_statement), 500, $db_connection, $get_deleted_tasks_statement);
@@ -156,7 +157,7 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
         }
 
     } else {
-        show_error_stmt('', 500, $db_connection, $get_wallet_statement);
+        show_error_stmt(mysqli_stmt_error($get_wallet_statement), 500, $db_connection, $get_wallet_statement);
     }
     $balance = round($balance * 100) / 100;
     $blocked = round($blocked * 100) / 100;

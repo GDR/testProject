@@ -80,8 +80,8 @@ modals.controller('ModalAddMoneyController', function ($scope, $modalInstance, R
 
     $scope.addMoney = function () {
         RequestFactory.addMoney($scope.money)
-            .success(function () {
-                $modalInstance.close($scope.money);
+            .success(function (data) {
+                $modalInstance.close(data);
             })
 
             .error(function (data, status) {

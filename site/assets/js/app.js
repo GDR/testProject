@@ -111,8 +111,7 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
         });
         modalInstance.result.then(
             function (data) {
-                console.log($scope.wallet.balance + " " + data + " " + (parseFloat($scope.wallet.balance) + parseFloat(data)));
-                $scope.wallet.balance = parseFloat(parseFloat($scope.wallet.balance) + parseFloat(data));
+                $scope.wallet = data;
 
                 toaster.success("You successfully added money");
             }

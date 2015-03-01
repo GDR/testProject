@@ -3,14 +3,14 @@
 require_once(__DIR__ . "/../utils/app_utils.php");
 header('Content-Type: application/json');
 
-$userId = -1;
+$user_id = -1;
 $moneyAmount = -1;
 
 if (isset($_POST[FIELD_AMOUNT])) {
     if (is_numeric($_POST[FIELD_AMOUNT])) {
         $moneyAmount = floatval($_POST[FIELD_AMOUNT]);
-        if ($moneyAmount <= 0) {
-            show_error('It has to be more than $0', 403);
+        if ($moneyAmount < 0.01) {
+            show_error('It has to be more than $0.01', 403);
         }
     } else {
         show_error('It must be float', 403);
@@ -20,11 +20,15 @@ if (isset($_POST[FIELD_AMOUNT])) {
 }
 
 $moneyAmount = (floor($moneyAmount * 100)) / 100;
-echo $moneyAmount;
-$userId = get_user_id();
+$user_id = get_user_id();
+$user_type = get_user_type();
 
-if ($userId == -1) {
+if ($user_id == -1) {
     show_error('You are not logged in', 401);
+}
+
+if ($user_type != USER_CUSTOMER) {
+    show_error('You can\'t add money on your account', 403);
 }
 
 require_once(__DIR__ . "/../utils/database_util.php");
@@ -34,7 +38,7 @@ $query = "INSERT INTO issues(title, fromUserId, fromUsername, toUserId, price, i
 
 if (mysqli_stmt_prepare($add_money_statement, $query)) {
     mysqli_stmt_bind_param($add_money_statement, 'idi',
-        $userId,
+        $user_id,
         $moneyAmount,
         get_current_time_in_mills()
         );
@@ -45,6 +49,9 @@ if (mysqli_stmt_prepare($add_money_statement, $query)) {
 } else {
     show_error_stmt(mysqli_stmt_errno($add_money_statement), 500, $db_connection, $add_money_statement);
 }
+//echo json_encode(calc_user_wallet($db_connection, $user_id, $user_type));
+require_once(__DIR__.'/../utils/wallet_utils.php');
+echo json_encode(calc_user_wallet($db_connection, $user_id, $user_type));
 
 mysqli_stmt_close($add_money_statement);
 mysqli_close($db_connection);
