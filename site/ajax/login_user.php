@@ -31,6 +31,7 @@ if (isset($_POST[FIELD_PASSWORD])) {
 }
 
 require_once(__DIR__ . "/../utils/database_util.php");
+require_once(__DIR__ . "/../utils/wallet_utils.php");
 
 $query = "SELECT id, userType, password FROM `users` WHERE username = ? LIMIT 1;";
 $select_user_statement = mysqli_stmt_init($db_connection);
@@ -65,6 +66,7 @@ if (mysqli_stmt_prepare($select_user_statement, $query)) {
         $response[FIELD_USERNAME] = $username;
         $response[FIELD_USER_ID] = $user_id;
         $response[FIELD_USER_TYPE] = $user_type;
+        $response[FIELD_WALLET] = calc_user_wallet($db_connection, $user_id, $user_type);
         die (json_encode($response));
     }
 } else {

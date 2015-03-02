@@ -60,45 +60,32 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
             data.forEach(updateMinId);
         });
 
-    $scope.wallet = {};
-
-    $scope.$watch(
-        function () {
-            return $rootScope.user;
-        },
-        function () {
-            RequestFactory.getWallet()
-                .success(function (data) {
-                    $scope.wallet = data;
-                });
-        }
-    );
-
-    RequestFactory.getWallet()
-        .success(function (data) {
-            $scope.wallet = data;
-        });
-
     $scope.deleteTask = function (task) {
         RequestFactory.deleteTask(task.taskId)
             .success(function (data) {
                 var idx = $scope.tasks.indexOf(task);
                 $scope.tasks.splice(idx, 1);
-                $scope.wallet = data;
+                $scope.user.wallet = data;
+                toaster.success("You have deleted the task");
+            })
+            .error(function(){
+                toaster.error("Something went wrong");
             });
     };
 
     $scope.completeTask = function (task) {
         RequestFactory.completeTask(task.taskId)
             .success(function (data) {
-                $scope.wallet = data;
+                $scope.user.wallet = data;
                 var idx = $scope.tasks.indexOf(task);
                 $scope.tasks.splice(idx, 1);
+                toaster.success("You have completed the task");
             })
             .error(function (data) {
                 if (data.reason == 'TaskDeleted') {
                     var idx = $scope.tasks.indexOf(task);
                     $scope.tasks.splice(idx, 1);
+                    toaster.error("Sorry, but this task already deleted");
                 }
             });
     };
@@ -112,7 +99,8 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
         });
         modalInstance.result.then(
             function (data) {
-                $scope.wallet = data.wallet;
+                updateMinId(data.task);
+                $rootScope.user.wallet = data.wallet;
                 $scope.tasks.unshift(data.task);
                 toaster.success("Task added", "Your task has been completely added");
             });
@@ -126,7 +114,7 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
         });
         modalInstance.result.then(
             function (data) {
-                $scope.wallet = data;
+                $rootScope.user.wallet = data;
 
                 toaster.success("You successfully added money");
             }
@@ -144,8 +132,6 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
                 }
             });
     };
-
-
 });
 
 

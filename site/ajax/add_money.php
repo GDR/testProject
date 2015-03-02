@@ -12,6 +12,9 @@ if (isset($_POST[FIELD_AMOUNT])) {
         if ($moneyAmount < 0.01) {
             show_error('It has to be more than $0.01', 403);
         }
+        if ($moneyAmount > MAX_AMOUNT_OF_MONEY) {
+            show_error('Do you really have so much cash?', 403);
+        }
     } else {
         show_error('It must be float', 403);
     }

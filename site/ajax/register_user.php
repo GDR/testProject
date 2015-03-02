@@ -5,7 +5,6 @@
  * Gets from POST request username and password
  */
 
-require_once(__DIR__ . "/../utils/database_util.php");
 require_once(__DIR__ . "/../utils/app_utils.php");
 header('Content-Type: application/json');
 
@@ -15,38 +14,35 @@ $userType = null;
 
 $response = array();
 
-if (isset($_POST[USERNAME])) {
-    $username = $_POST[USERNAME];
+if (isset($_POST[FIELD_USERNAME])) {
+    $username = $_POST[FIELD_USERNAME];
     if (strlen($username) < 5) {
-        $response['reason'] = 'Username must be at least 5 chars';
+        show_error('Username must be at least 5 chars', 403);
     } elseif (!ctype_alnum($username)) {
-        $response['reason'] = 'Username can only contain alphanumeric characters';
+        show_error('Username can only contain alphanumeric characters', 403);
     }
 } else {
-    $response['reason'] = 'Username must not be empty';
+    show_error('Username must not be empty', 403);
 }
-if (isset($_POST[PASSWORD])) {
+if (isset($_POST[FIELD_PASSWORD])) {
     $password = $_POST['password'];
     if (strlen($password) < 5) {
-        $response['reason'] = 'Password must be at least 5 chars';
+        show_error('Password must be at least 5 chars', 403);
     }
 } else {
-    $response['reason'] = 'Password must not be empty';
+    show_error('Password must not be empty', 403);
 }
-if (isset($_POST[USER_TYPE])) {
-    $userType = $_POST[USER_TYPE];
+if (isset($_POST[FIELD_USER_TYPE])) {
+    $userType = $_POST[FIELD_USER_TYPE];
     if ($userType != USER_CUSTOMER && $userType != USER_PERFORMER) {
-        $response['reason'] = 'Incorrect user type';
+        show_error('Incorrect user type', 403);
     }
 } else {
-    $response['reason'] = 'User type must not be empty';
+    show_error('User type must not be empty', 403);
 }
 
-if (isset($response['reason'])) {
-    http_response_code(403);
-    echo json_encode($response);
-    exit();
-}
+require_once(__DIR__ . "/../utils/database_util.php");
+
 $username = trim($username);
 $username = strtolower($username);
 $username = mysqli_real_escape_string($db_connection, $username);

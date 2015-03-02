@@ -17,9 +17,9 @@ if ($userId == -1 || $username == null || $user_type == -1) {
     show_error('You must be logged in', 401);
 }
 
-if (isset($_POST[FIELD_TASK_ID])) {
-    if (is_numeric($_POST[FIELD_TASK_ID])) {
-        $taskId = intval($_POST[FIELD_TASK_ID]);
+if (isset($_POST[FIELD_ISSUE_ID])) {
+    if (is_numeric($_POST[FIELD_ISSUE_ID])) {
+        $taskId = intval($_POST[FIELD_ISSUE_ID]);
     } else {
         show_error('Task id must be int', 403);
     }

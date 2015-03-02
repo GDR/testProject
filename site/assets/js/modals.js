@@ -50,10 +50,21 @@ modals.controller('ModalSignUpController', function ($scope, $modalInstance, USE
     };
 });
 
-modals.controller('ModalAddTaskController', function ($scope, $modalInstance, RequestFactory) {
+modals.controller('ModalAddTaskController', function ($scope, $rootScope, $modalInstance, RequestFactory) {
+
+    $scope.wallet = $rootScope.user.wallet;
+    $scope.$watch(
+        function() {
+            return $rootScope.user.wallet;
+        },
+        function(newVal) {
+            $scope.wallet = newVal;
+        }
+    );
+
     $scope.task = {
         title: '',
-        price: 5.99
+        price: Math.min(5.99, $scope.wallet.balance)
     };
 
     $scope.error = null;

@@ -35,7 +35,7 @@ if (mysqli_stmt_prepare($get_tasks_statement, $query)) {
     $response = array();
     while (mysqli_stmt_fetch($get_tasks_statement)) {
         array_push($response, array(
-            FIELD_TASK_ID => $taskId,
+            FIELD_ISSUE_ID => $taskId,
             FIELD_TITLE => $title,
             FIELD_USER_ID => $fromUserId,
             FIELD_USERNAME => $fromUsername,

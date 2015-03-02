@@ -10,6 +10,9 @@ $taskTitle = '';
 
 if (isset($_POST[FIELD_TITLE])) {
     $taskTitle = $_POST[FIELD_TITLE];
+    if (strlen($taskTitle) < 4) {
+        show_error('Task title should be at least 4 chard', 403);
+    }
 } else {
     show_error('Task title should be not empty', 403);
 }
@@ -77,7 +80,7 @@ if (mysqli_stmt_prepare($add_task_statement, $query)) {
 
     $response = array('wallet' => $wallet,
         'task' => array(
-            FIELD_TASK_ID => $issueId,
+            FIELD_ISSUE_ID => $issueId,
             FIELD_TITLE => $taskTitle,
             FIELD_USER_ID => $userId,
             FIELD_USERNAME => $username,

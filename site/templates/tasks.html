@@ -2,7 +2,7 @@
 <div class="container wa-main">
     <div class="row">
         <div class="col-md-4 col-md-push-8">
-            <div class="panel panel-default">
+            <div class="panel panel-default" ng-hide="user == null">
                 <div class="panel-heading">
                     Account
                 </div>
@@ -10,7 +10,7 @@
                     <div class="form-group">
                         You have
                         <div class="pull-right">
-                            <b>{{wallet.balance | currency}}</b>
+                            <b>{{user.wallet.balance | currency}}</b>
                         </div>
                     </div>
                     <div ng-show="user.userType == USER_TYPES_CONST.CUSTOMER">
@@ -18,7 +18,7 @@
                         <div class="form-group">
                             Blocked
                             <div class="pull-right">
-                                <b>{{wallet.blocked | currency}}</b>
+                                <b>{{user.wallet.blocked | currency}}</b>
                             </div>
                         </div>
                         <hr/>
