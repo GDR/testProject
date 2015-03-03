@@ -96,11 +96,6 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
                 }
             }
 
-//            echo json_encode(array(
-//                'balance' => $balance,
-//                'blocked' => $blocked,
-//                'paid' => $paid));
-
             foreach ($issues as $issue) {
                 if ($issue[FIELD_ISSUE_TYPE] == 'D') {
                     // if we calced this task as opened, than we have to revert everything
@@ -109,11 +104,6 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
                     $blocked -= $sum;
                 }
             }
-
-//            echo json_encode(array(
-//                'balance' => $balance,
-//                'blocked' => $blocked,
-//                'paid' => $paid));
 
             $tasks_to_block = array();
 
@@ -137,10 +127,6 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
                 }
             }
 
-//            echo json_encode(array(
-//                'balance' => $balance,
-//                'blocked' => $blocked,
-//                'paid' => $paid));
 
             foreach ($issues as $issue) {
                 if ($issue[FIELD_ISSUE_TYPE] == 'C') {
@@ -150,10 +136,7 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
                 }
             }
 
-//            echo json_encode(array(
-//                'balance' => $balance,
-//                'blocked' => $blocked,
-//                'paid' => $paid));
+
 
             // TODO do in background
             $query = "UPDATE issues SET issueType = 'D', tsEdited = ? WHERE id = ? AND issueType = 'O';";
@@ -182,15 +165,15 @@ function calc_user_wallet($db_connection, $user_id, $user_type)
     } else {
         show_error_stmt(mysqli_stmt_error($get_wallet_statement), 500, $db_connection, $get_wallet_statement);
     }
-    $balance = round($balance * 100) / 100;
-    $blocked = round($blocked * 100) / 100;
-    $paid = round($paid * 100) / 100;
+//    $balance = round($balance * 100) / 100;
+//    $blocked = round($blocked * 100) / 100;
+//    $paid = round($paid * 100) / 100;
 
     $query = "UPDATE wallets SET money = ?, blocked = ?, paid = ?, ts = ? WHERE userId = ?";
     $update_wallet_statement = mysqli_stmt_init($db_connection);
 //    echo json_encode(array($balance, $blocked, $paid, $user_id, $new_timestamp));
     if (mysqli_stmt_prepare($update_wallet_statement, $query)) {
-        mysqli_stmt_bind_param($update_wallet_statement, 'iiiii', $balance, $blocked, $paid, $new_timestamp, $user_id);
+        mysqli_stmt_bind_param($update_wallet_statement, 'dddii', $balance, $blocked, $paid, $new_timestamp, $user_id);
         mysqli_stmt_execute($update_wallet_statement);
     } else {
         show_error_stmt(mysqli_stmt_error($update_wallet_statement), 500, $db_connection, $update_wallet_statement);

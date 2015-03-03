@@ -52,12 +52,13 @@ modals.controller('ModalSignUpController', function ($scope, $modalInstance, USE
 
 modals.controller('ModalAddTaskController', function ($scope, $rootScope, $modalInstance, RequestFactory) {
 
+
     $scope.wallet = $rootScope.user.wallet;
     $scope.$watch(
-        function() {
+        function () {
             return $rootScope.user.wallet;
         },
-        function(newVal) {
+        function (newVal) {
             $scope.wallet = newVal;
         }
     );
@@ -65,6 +66,27 @@ modals.controller('ModalAddTaskController', function ($scope, $rootScope, $modal
     $scope.task = {
         title: '',
         price: Math.min(5.99, $scope.wallet.balance)
+    };
+
+    $scope.$watch(function () {
+            return $scope.task.price;
+        },
+        function () {
+            recalcTotal();
+        });
+
+    $scope.total = {
+        price: null,
+        commission: null
+    };
+
+    var recalcTotal = function () {
+        var temp = Math.floor($scope.task.price * 100);
+        $scope.total.commission = Math.ceil(temp * 0.2);
+        $scope.total.price = temp - $scope.total.commission;
+
+        $scope.total.commission /= 100;
+        $scope.total.price /= 100;
     };
 
     $scope.error = null;
@@ -85,7 +107,8 @@ modals.controller('ModalAddTaskController', function ($scope, $rootScope, $modal
 });
 
 modals.controller('ModalAddMoneyController', function ($scope, $modalInstance, RequestFactory) {
-    $scope.money = 0;
+    $scope.money = 5;
+
 
     $scope.error = null;
 
@@ -100,7 +123,7 @@ modals.controller('ModalAddMoneyController', function ($scope, $modalInstance, R
             });
     };
 
-    $scope.close = function() {
+    $scope.close = function () {
         $modalInstance.dismiss();
     }
 });

@@ -95,7 +95,6 @@ app.controller('TasksController', function ($scope, $rootScope, $modal, RequestF
         var modalInstance = $modal.open({
             templateUrl: 'templates/modal/add_task.html',
             controller: 'ModalAddTaskController',
-            size: 'sm'
         });
         modalInstance.result.then(
             function (data) {

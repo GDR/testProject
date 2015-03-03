@@ -37,7 +37,7 @@ utils.factory('UtilsFactory', function($rootScope, USER_TYPES) {
 
     factory.isLoggedIn = function() {
         return $rootScope.user != null;
-    }
+    };
 
     return factory;
 });
